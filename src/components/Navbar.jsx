@@ -3,7 +3,7 @@ import Logo from "./Logo";
 import Button from "./Button";
 import { NAV_LINKS } from "../data/constants";
 
-export default function Navbar({ onOpenAuth }) {
+export default function Navbar({ onOpenAuth, isAuthenticated }) {
   const [scrolled,      setScrolled]      = useState(false);
   const [activeDropdown,setActiveDropdown] = useState(null);
   const [mobileOpen,    setMobileOpen]     = useState(false);
@@ -134,13 +134,15 @@ export default function Navbar({ onOpenAuth }) {
 
         {/* CTAs - responsive */}
         <div className="cta-buttons" style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 10px)", flexShrink: 0 }}>
-          <Button
-            variant={scrolled ? "secondary" : "ghost"}
-            size="sm"
-            onClick={() => onOpenAuth("login")}
-          >
-            Log in
-          </Button>
+          {!isAuthenticated && (
+            <Button
+              variant={scrolled ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => onOpenAuth("login")}
+            >
+              Log in
+            </Button>
+          )}
           <Button
             variant="primary"
             size="sm"

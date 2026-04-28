@@ -18,19 +18,25 @@ import TestimonialsSection             from "./sections/TestimonialsSection";
 import CTASection                      from "./sections/CTASection";
 
 export default function App() {
-  const [authOpen,  setAuthOpen]  = useState(false);
-  const [authTab,   setAuthTab]   = useState("register");
-  const [videoOpen, setVideoOpen] = useState(false);
+  const [authOpen,      setAuthOpen]      = useState(false);
+  const [authTab,       setAuthTab]       = useState("register");
+  const [authenticated, setAuthenticated] = useState(false);
+  const [videoOpen,     setVideoOpen]     = useState(false);
 
   const openAuth = (tab = "register") => {
     setAuthTab(tab);
     setAuthOpen(true);
   };
 
+  const handleAuthSuccess = () => {
+    setAuthenticated(true);
+    setAuthOpen(false);
+  };
+
   return (
     <>
       {/* ── Navigation ── */}
-      <Navbar onOpenAuth={openAuth} />
+      <Navbar onOpenAuth={openAuth} isAuthenticated={authenticated} />
 
       {/* ── Page sections ── */}
       <main>
@@ -69,6 +75,7 @@ export default function App() {
         isOpen={authOpen}
         defaultTab={authTab}
         onClose={() => setAuthOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
       />
 
       <VideoModal

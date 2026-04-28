@@ -2,31 +2,27 @@ import { useState } from "react";
 import Logo from "./Logo";
 import Button from "./Button";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Firebase wiring — uncomment when you add your firebase config
-// ─────────────────────────────────────────────────────────────────────────────
-// import { initializeApp } from "firebase/app";
-// import {
-//   getAuth,
-//   createUserWithEmailAndPassword,
-//   signInWithEmailAndPassword,
-//   signInWithPopup,
-//   GoogleAuthProvider,
-//   updateProfile,
-// } from "firebase/auth";
-//
-// const firebaseConfig = {
-//   apiKey:            "YOUR_API_KEY",
-//   authDomain:        "YOUR_AUTH_DOMAIN",
-//   projectId:         "YOUR_PROJECT_ID",
-//   storageBucket:     "YOUR_STORAGE_BUCKET",
-//   messagingSenderId: "YOUR_MSG_SENDER_ID",
-//   appId:             "YOUR_APP_ID",
-// };
-// const app           = initializeApp(firebaseConfig);
-// const auth          = getAuth(app);
-// const googleProvider = new GoogleAuthProvider();
-// ─────────────────────────────────────────────────────────────────────────────
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  updateProfile,
+} from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY || import.meta.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || import.meta.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID || import.meta.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || import.meta.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || import.meta.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID || import.meta.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+};
+const app           = initializeApp(firebaseConfig);
+const auth          = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
 const INPUT_STYLE = {
   width:        "100%",
@@ -72,7 +68,7 @@ function GoogleIcon() {
   );
 }
 
-export default function AuthModal({ isOpen, defaultTab = "register", onClose }) {
+export default function AuthModal({ isOpen, defaultTab = "register", onClose, onAuthSuccess = () => {} }) {
   const [tab,      setTab]      = useState(defaultTab);
   const [name,     setName]     = useState("");
   const [email,    setEmail]    = useState("");
@@ -94,18 +90,18 @@ export default function AuthModal({ isOpen, defaultTab = "register", onClose }) 
     e.preventDefault();
     setLoading(true); setError(""); setSuccess("");
     try {
-      // ── Replace stubs below with real Firebase calls ──
       if (tab === "register") {
-        // const cred = await createUserWithEmailAndPassword(auth, email, password);
-        // await updateProfile(cred.user, { displayName: name });
-        await new Promise(r => setTimeout(r, 1200)); // stub
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        if (name.trim()) {
+          await updateProfile(cred.user, { displayName: name.trim() });
+        }
         setSuccess("Welcome to SocialPulse! Redirecting to dashboard…");
       } else {
-        // await signInWithEmailAndPassword(auth, email, password);
-        await new Promise(r => setTimeout(r, 1000)); // stub
+        await signInWithEmailAndPassword(auth, email, password);
         setSuccess("Welcome back! Redirecting to dashboard…");
       }
-      setTimeout(() => { onClose(); reset(); }, 1800);
+      onAuthSuccess();
+      setTimeout(() => { reset(); }, 1800);
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
@@ -117,10 +113,10 @@ export default function AuthModal({ isOpen, defaultTab = "register", onClose }) 
   const handleGoogle = async () => {
     setLoading(true); setError("");
     try {
-      // await signInWithPopup(auth, googleProvider);
-      await new Promise(r => setTimeout(r, 900)); // stub
+      await signInWithPopup(auth, googleProvider);
       setSuccess("Signed in with Google!");
-      setTimeout(() => { onClose(); reset(); }, 1500);
+      onAuthSuccess();
+      setTimeout(() => { reset(); }, 1500);
     } catch (err) {
       setError(err.message || "Google sign-in failed.");
     } finally {
