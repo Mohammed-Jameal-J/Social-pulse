@@ -44,10 +44,17 @@ const FOOTER_LINKS = {
 };
 
 const REVEAL_H = 280;
+const MOBILE_HIDDEN_LINKS = new Set([
+  "Privacy policy",
+  "Terms of service",
+  "Cookie Settings",
+]);
 
 export default function Footer() {
   const [openSections, setOpenSections] = useState({});
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : true
+  );
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -146,7 +153,7 @@ export default function Footer() {
           style={{
             maxWidth: 1280,
             margin: "0 auto",
-            padding: isMobile ? "40px 20px 24px" : "64px 28px 32px",
+            padding: isMobile ? "32px 18px 22px" : "64px 28px 32px",
           }}
         >
           {/* Top section: CTA + Links */}
@@ -162,10 +169,10 @@ export default function Footer() {
             <div>
               <div
                 style={{
-                  fontSize: isMobile ? "28px" : "clamp(32px, 4vw, 44px)",
+                  fontSize: isMobile ? "24px" : "clamp(32px, 4vw, 44px)",
                   fontWeight: 800,
-                  lineHeight: 1.05,
-                  marginBottom: 18,
+                  lineHeight: isMobile ? 1.2 : 1.05,
+                  marginBottom: isMobile ? 14 : 18,
                   fontFamily: "var(--font-display)",
                   color: "var(--text-primary)",
                 }}
@@ -174,11 +181,11 @@ export default function Footer() {
               </div>
               <p
                 style={{
-                  maxWidth: 520,
+                  maxWidth: isMobile ? "100%" : 520,
                   color: "var(--text-secondary)",
                   fontSize: isMobile ? "15px" : "clamp(15px, 2vw, 17px)",
-                  lineHeight: 1.8,
-                  marginBottom: 28,
+                  lineHeight: 1.75,
+                  marginBottom: isMobile ? 22 : 28,
                 }}
               >
                 Try SocialPulse free for seven days. Cancel anytime.
@@ -213,11 +220,20 @@ export default function Footer() {
             {isMobile ? (
               /* Mobile: accordion */
               <div style={{ borderTop: "1px solid var(--border)" }}>
-                {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-                  <div
-                    key={title}
-                    style={{ borderBottom: "1px solid var(--border)" }}
-                  >
+                {Object.entries(FOOTER_LINKS).map(([title, links]) => {
+                  const filteredLinks = isMobile
+                    ? links.filter((link) => !MOBILE_HIDDEN_LINKS.has(link))
+                    : links;
+
+                  if (isMobile && filteredLinks.length === 0) {
+                    return null;
+                  }
+
+                  return (
+                    <div
+                      key={title}
+                      style={{ borderBottom: "1px solid var(--border)" }}
+                    >
                     <button
                       onClick={() => toggleSection(title)}
                       style={{
@@ -255,7 +271,7 @@ export default function Footer() {
 
                     {openSections[title] && (
                       <div style={{ paddingBottom: 16 }}>
-                        {links.map((link) => (
+                        {filteredLinks.map((link) => (
                           <div key={link} style={{ marginBottom: 12 }}>
                             <a
                               href="#"
@@ -275,7 +291,8 @@ export default function Footer() {
                       </div>
                     )}
                   </div>
-                ))}
+                );
+              })}
               </div>
             ) : (
               /* Desktop: grid columns */
@@ -400,20 +417,21 @@ export default function Footer() {
               <span>
                 © {new Date().getFullYear()} SocialPulse. All rights reserved.
               </span>
-              {["Privacy Policy", "Terms of Service", "Cookie Settings"].map(
-                (label) => (
-                  <a
-                    key={label}
-                    href="#"
-                    style={{
-                      color: "var(--text-secondary)",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {label}
-                  </a>
-                )
-              )}
+              {!isMobile &&
+                ["Privacy Policy", "Terms of Service", "Cookie Settings"].map(
+                  (label) => (
+                    <a
+                      key={label}
+                      href="#"
+                      style={{
+                        color: "var(--text-secondary)",
+                        textDecoration: "none",
+                      }}
+                    >
+                      {label}
+                    </a>
+                  )
+                )}
             </div>
           </div>
         </div>
