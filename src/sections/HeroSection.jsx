@@ -5,7 +5,7 @@ import { HERO_STATS } from "../data/constants";
 // ── Replace with your own hosted hero background video ────────────────────────
 // Recommended: Upload a dark, abstract tech/data visualization video to
 // Firebase Storage and paste the public URL here.
-const HERO_VIDEO = "https://videos.pexels.com/video-files/3130284/3130284-uhd_2560_1440_25fps.mp4";
+const HERO_VIDEO = "";
 
 export default function HeroSection({ onOpenAuth, onOpenVideo }) {
   const videoRef = useRef(null);
@@ -27,22 +27,24 @@ export default function HeroSection({ onOpenAuth, onOpenVideo }) {
       background: "var(--bg-dark)",
     }}>
       {/* Background video */}
-      <video
-        ref={videoRef}
-        src={HERO_VIDEO}
-        muted
-        loop
-        playsInline
-        style={{
-          position:   "absolute",
-          inset:      0,
-          width:      "100%",
-          height:     "100%",
-          objectFit:  "cover",
-          zIndex:     0,
-          opacity:    0.35,
-        }}
-      />
+      {HERO_VIDEO && (
+        <video
+          ref={videoRef}
+          src={HERO_VIDEO}
+          muted
+          loop
+          playsInline
+          style={{
+            position:   "absolute",
+            inset:      0,
+            width:      "100%",
+            height:     "100%",
+            objectFit:  "cover",
+            zIndex:     0,
+            opacity:    0.35,
+          }}
+        />
+      )}
 
       {/* Gradient overlay */}
       <div style={{
