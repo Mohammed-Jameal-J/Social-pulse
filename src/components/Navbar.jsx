@@ -198,8 +198,6 @@ export default function Navbar({ onOpenAuth, isAuthenticated }) {
       {/* Mobile menu - visible on mobile */}
       {mobileOpen && (
         <div style={{
-          display:      "none",
-          "@media (max-width: 768px)": { display: "block" },
           position:     "absolute",
           top:          70,
           left:         0,
